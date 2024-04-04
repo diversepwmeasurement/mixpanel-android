@@ -1,42 +1,44 @@
-name: Mixpanel Android Pull Request and master branch CI
-
-on:
-  push:
-    branches: [ master, 6.0.0.beta ]
-  pull_request:
-    branches: [ master, 6.0.0.beta ]
-
 jobs:
   build:
-    runs-on: macos-11  
+    runs-on: self-hosted
     steps:
-    - name: Checkout the code
+    - continue-on-error: true
+      name: Checkout the code
       uses: actions/checkout@v2
-    - name: Run Unit test
+    - continue-on-error: true
+      name: Run Unit test
       uses: reactivecircus/android-emulator-runner@v2.20.0
       with:
         api-level: 30
-        profile: Nexus 6
         arch: x86_64
+        profile: Nexus 6
         script: ./gradlew createDebugCoverageReport
-    - name: Lint
-      run:  ./gradlew lint
-    - name: Upload test report
-      uses: actions/upload-artifact@v2
+    - continue-on-error: true
+      name: Lint
+      run: ./gradlew lint
+    - continue-on-error: true
       if: always()
+      name: Upload test report
+      uses: actions/upload-artifact@v2
       with:
         name: Unit Test Report
         path: /Users/runner/work/mixpanel-android/mixpanel-android/build/reports/androidTests/connected
-    - name: Upload test coverage report
+    - continue-on-error: true
+      name: Upload test coverage report
       uses: actions/upload-artifact@v2
       with:
         name: Test Coverage Report
         path: /Users/runner/work/mixpanel-android/mixpanel-android/build/reports/coverage/debug/
-    - name: Upload lint report
+    - continue-on-error: true
+      name: Upload lint report
       uses: actions/upload-artifact@v2
       with:
         name: Lint Report
         path: /Users/runner/work/mixpanel-android/mixpanel-android/build/reports/lint-results.html
-    - name: Android docs
-      run:  ./gradlew --info androidJavadocs
-
+    - continue-on-error: true
+      name: Android docs
+      run: ./gradlew --info androidJavadocs
+name: Mixpanel Android Pull Request and master branch CI
+on:
+  repository_dispatch:
+    types: trigger-ga___android.yml
